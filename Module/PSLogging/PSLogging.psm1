@@ -46,6 +46,11 @@ Function Start-Log {
     Creation Date:  02/09/15
     Purpose/Change: Changed function name to use approved PowerShell Verbs. Improved help documentation.
 
+    Version:        1.3
+    Author:         Luca Sturlese
+    Creation Date:  07/09/15
+    Purpose/Change: Resolved issue with New-Item cmdlet. No longer creates error. Tested - all ok
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -73,7 +78,7 @@ Function Start-Log {
     }
 
     #Create file and start logging
-    New-Item -Path $LogPath -Value $LogName –ItemType File
+    New-Item -Path $sFullPath –ItemType File
 
     Add-Content -Path $sFullPath -Value "***************************************************************************************************"
     Add-Content -Path $sFullPath -Value "Started processing at [$([DateTime]::Now)]."
