@@ -67,7 +67,7 @@ Function Connect-VMwareServer {
     }
 
     Catch {
-      Write-LogError -LogPath $sLogFile -Message $_.Exception -ExitGracefully $True
+      Write-LogError -LogPath $sLogFile -Message $_.Exception -ExitGracefully
       Break
     }
   }
@@ -95,7 +95,7 @@ Function <FunctionName> {
     }
 
     Catch {
-      Write-LogError -LogPath $sLogFile -Message $_.Exception -ExitGracefully $True
+      Write-LogError -LogPath $sLogFile -Message $_.Exception -ExitGracefully
       Break
     }
   }
