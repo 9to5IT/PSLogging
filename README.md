@@ -19,6 +19,8 @@ That got me thinking.... so I have made a number of improvements to the PowerShe
 
 For more information on the PSLogging module and for detailed help information (and support) please see [PowerShell Logging V2 - Easily create log files](http://9to5IT.com/powershell-logging-v2-easily-create-log-files).
 
+[Detailed history of development](./VERSION.md)
+
 ## Installation Instructions
 Follow these steps to install and start using the my PowerShell Logging solution:
 
@@ -30,6 +32,13 @@ Follow these steps to install and start using the my PowerShell Logging solution
 	3. For more information see [Microsoft TechNet - Installing PowerShell Modules](https://technet.microsoft.com/en-us/library/dd878350(v=vs.85).aspx)
 3. To use PSLogging, in the script you want to use it (or in your current PowerShell environment) run `Import-Module PSLogging`.
 4. You will now be able to call all of the PSLogging cmdlets just like you would any other cmdlet. In addition you can run `Get-Help <cmdlet_name> -Full` on any of the PSLogging cmdlets to get full detailed help and examples.
+
+### PowerShell Version 2.0
+1. If you would like use with PowerShell v2 you need edit the Module manifest file PSLogging.psd1
+- change the line: RootModule = 'PSLogging.psm1' to ModuleToProcess = 'PSLogging.psm1'
+- change the line: PowerShellVersion = '3.0' to PowerShellVersion = '2.0'
+- comment the line: HelpInfoURI = ''
+- Enjoy :-)
 
 #### PowerShell v5 (Install PSLogging)
 1. From PowerShell, run `Install-Module PSLogging -Scope CurrentUser`
