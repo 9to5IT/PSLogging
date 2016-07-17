@@ -22,15 +22,23 @@
   Purpose/Change: Initial script development
 
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
-
   <Example explanation goes here>
+  
+  <Example goes here. Repeat this attribute for more than one example>
 #>
+
+#---------------------------------------------------------[Script Parameters]------------------------------------------------------
+
+Param (
+  #Script parameters go here
+)
 
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
 $ErrorActionPreference = 'SilentlyContinue'
+
+#Import Modules & Snap-ins
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
@@ -43,12 +51,26 @@ $ErrorActionPreference = 'SilentlyContinue'
 Function <FunctionName> {
   Param ()
 
-  Try {
-    <code goes here>
+  Begin {
+    Write-Host '<description of what is going on>...'
   }
 
-  Catch {
-    Break
+  Process {
+    Try {
+      <code goes here>
+    }
+
+    Catch {
+      Write-Host -BackgroundColor Red "Error: $($_.Exception)"
+      Break
+    }
+  }
+
+  End {
+    If ($?) {
+      Write-Host 'Completed Successfully.'
+      Write-Host ' '
+    }
   }
 }
 

@@ -25,17 +25,23 @@
   Purpose/Change: Initial script development
 
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
-
   <Example explanation goes here>
+  
+  <Example goes here. Repeat this attribute for more than one example>
 #>
+
+#---------------------------------------------------------[Script Parameters]------------------------------------------------------
+
+Param (
+  #Script parameters go here
+)
 
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
 $ErrorActionPreference = 'SilentlyContinue'
 
-#Add VMware PowerCLI Snap-Ins
+#Import Modules & Snap-ins
 Add-PSSnapin VMware.VimAutomation.Core
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
@@ -45,15 +51,29 @@ Add-PSSnapin VMware.VimAutomation.Core
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
 Function Connect-VMwareServer {
-  Param ([Parameter(Mandatory = $true)][string]$VMServer)
+  Param ([Parameter(Mandatory=$true)][string]$VMServer)
 
-  Try {
-    $oCred = Get-Credential -Message 'Enter credentials to connect to vSphere Server or Host'
-    Connect-VIServer -Server $VMServer -Credential $oCred
+  Begin {
+    Write-Host "Connecting to VMware environment [$VMServer]..."
   }
 
-  Catch {
-    Break
+  Process {
+    Try {
+      $oCred = Get-Credential -Message 'Enter credentials to connect to vSphere Server or Host'
+      Connect-VIServer -Server $VMServer -Credential $oCred
+    }
+
+    Catch {
+      Write-Host -BackgroundColor Red "Error: $($_.Exception)"
+      Break
+    }
+  }
+
+  End {
+    If ($?) {
+      Write-Host 'Completed Successfully.'
+      Write-Host ' '
+    }
   }
 }
 
@@ -62,12 +82,26 @@ Function Connect-VMwareServer {
 Function <FunctionName> {
   Param ()
 
-  Try {
-    <code goes here>
+  Begin {
+    Write-Host '<description of what is going on>...'
   }
 
-  Catch {
-    Break
+  Process {
+    Try {
+      <code goes here>
+    }
+
+    Catch {
+      Write-Host -BackgroundColor Red "Error: $($_.Exception)"
+      Break
+    }
+  }
+
+  End {
+    If ($?) {
+      Write-Host 'Completed Successfully.'
+      Write-Host ' '
+    }
   }
 }
 

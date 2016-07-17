@@ -25,20 +25,24 @@
   Purpose/Change: Initial script development
 
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
-
   <Example explanation goes here>
+  
+  <Example goes here. Repeat this attribute for more than one example>
 #>
+
+#---------------------------------------------------------[Script Parameters]------------------------------------------------------
+
+Param (
+  #Script parameters go here
+)
 
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
 $ErrorActionPreference = 'SilentlyContinue'
 
-#Import PSLogging Module
+#Import Modules & Snap-ins
 Import-Module PSLogging
-
-#Add VMware PowerCLI Snap-Ins
 Add-PSSnapin VMware.VimAutomation.Core
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
