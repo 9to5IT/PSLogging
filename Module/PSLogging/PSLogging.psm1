@@ -60,6 +60,11 @@ Function Start-Log {
     Creation Date:  12/09/15
     Purpose/Change: Added -ToScreen parameter which will display content to screen as well as write to the log file.
 
+    Version:        1.5
+    Author:         Perry Harris
+    Creation Date:  02/10/2017
+    Purpose/Change: Added TimeStamp option at the beginning, ToScreen now uses Write-Verbose, added spacing so that messages line up after Info: Warning: Error:, Return File Info 
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -76,50 +81,92 @@ Function Start-Log {
     [Parameter(Mandatory=$true,Position=0)][string]$LogPath,
     [Parameter(Mandatory=$true,Position=1)][string]$LogName,
     [Parameter(Mandatory=$true,Position=2)][string]$ScriptVersion,
-    [Parameter(Mandatory=$false,Position=3)][switch]$ToScreen
+    [Parameter(Mandatory=$false,Position=3)][switch]$ToScreen,
+    [Parameter(Mandatory=$false,Position=4)][switch]$TimeStamp,
+    [Parameter(Mandatory=$false,Position=5)][switch]$Append
   )
 
   Process {
     $sFullPath = Join-Path -Path $LogPath -ChildPath $LogName
 
-    #Check if file exists and delete if it does
-    If ( (Test-Path -Path $sFullPath) ) {
-      Remove-Item -Path $sFullPath -Force
+    #Append Mode
+    If ($Append) {
+        $FileInfo = Get-Item $sFullPath
+    } else {
+        #Check if file exists and delete if it does
+        If ( (Test-Path -Path $sFullPath) ) {
+          Remove-Item -Path $sFullPath -Force
+        }
+
+        #Create file and start logging
+        $FileInfo = New-Item -Path $sFullPath –ItemType File
     }
+    If ($TimeStamp) {
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           Started processing at [$([DateTime]::Now)]."
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           Running script version [$ScriptVersion]."
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))  "
 
-    #Create file and start logging
-    New-Item -Path $sFullPath –ItemType File
+        #Write to screen for debug mode
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           Started processing at [$([DateTime]::Now)]."
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           Running script version [$ScriptVersion]."
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))  "
 
-    Add-Content -Path $sFullPath -Value "***************************************************************************************************"
-    Add-Content -Path $sFullPath -Value "Started processing at [$([DateTime]::Now)]."
-    Add-Content -Path $sFullPath -Value "***************************************************************************************************"
-    Add-Content -Path $sFullPath -Value ""
-    Add-Content -Path $sFullPath -Value "Running script version [$ScriptVersion]."
-    Add-Content -Path $sFullPath -Value ""
-    Add-Content -Path $sFullPath -Value "***************************************************************************************************"
-    Add-Content -Path $sFullPath -Value ""
-
-    #Write to screen for debug mode
-    Write-Debug "***************************************************************************************************"
-    Write-Debug "Started processing at [$([DateTime]::Now)]."
-    Write-Debug "***************************************************************************************************"
-    Write-Debug ""
-    Write-Debug "Running script version [$ScriptVersion]."
-    Write-Debug ""
-    Write-Debug "***************************************************************************************************"
-    Write-Debug ""
-
-    #Write to scren for ToScreen mode
-    If ( $ToScreen -eq $True ) {
-      Write-Output "***************************************************************************************************"
-      Write-Output "Started processing at [$([DateTime]::Now)]."
-      Write-Output "***************************************************************************************************"
-      Write-Output ""
-      Write-Output "Running script version [$ScriptVersion]."
-      Write-Output ""
-      Write-Output "***************************************************************************************************"
-      Write-Output ""
+        #Write to scren for ToScreen mode
+        If ( $ToScreen -eq $True ) {
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           Started processing at [$([DateTime]::Now)]."
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           Running script version [$ScriptVersion]."
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))  "
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))  "
     }
+    } else {
+        Add-Content -Path $sFullPath -Value "         ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value "         Started processing at [$([DateTime]::Now)]."
+        Add-Content -Path $sFullPath -Value "         ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value ""
+        Add-Content -Path $sFullPath -Value "         Running script version [$ScriptVersion]."
+        Add-Content -Path $sFullPath -Value ""
+        Add-Content -Path $sFullPath -Value "         ***************************************************************************************************"
+        Add-Content -Path $sFullPath -Value ""
+
+        #Write to screen for debug mode
+        Write-Debug "         ***************************************************************************************************"
+        Write-Debug "         Started processing at [$([DateTime]::Now)]."
+        Write-Debug "         ***************************************************************************************************"
+        Write-Debug ""
+        Write-Debug "         Running script version [$ScriptVersion]."
+        Write-Debug ""
+        Write-Debug "         ***************************************************************************************************"
+        Write-Debug ""
+
+        #Write to scren for ToScreen mode
+        If ( $ToScreen -eq $True ) {
+          Write-Verbose "          ***************************************************************************************************"
+          Write-Verbose "          Started processing at [$([DateTime]::Now)]."
+          Write-Verbose "          ***************************************************************************************************"
+          Write-Verbose ""
+          Write-Verbose "          Running script version [$ScriptVersion]."
+          Write-Verbose ""
+          Write-Verbose "          ***************************************************************************************************"
+          Write-Verbose ""
+        }
+    }
+  }
+  End {
+  Return $FileInfo
   }
 }
 
@@ -182,6 +229,11 @@ Function Write-LogInfo {
     Creation Date:  12/09/15
     Purpose/Change: Added -ToScreen parameter which will display content to screen as well as write to the log file.
 
+    Version:        1.6
+    Author:         Perry Harris
+    Creation Date:  02/10/2017
+    Purpose/Change: Put TimeStamp at the beginning, ToScreen now uses Write-Verbose, added spacing so that messages line up after Info: Warning: Error: 
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -201,9 +253,11 @@ Function Write-LogInfo {
   )
 
   Process {
+    $Message = "INFO:    $Message"
+
     #Add TimeStamp to message if specified
     If ( $TimeStamp -eq $True ) {
-      $Message = "$Message  [$([DateTime]::Now)]"
+      $Message = "$([DateTime]::Now.GetDateTimeFormats('s'))  $Message"
     }
 
     #Write Content to Log
@@ -214,7 +268,7 @@ Function Write-LogInfo {
 
     #Write to scren for ToScreen mode
     If ( $ToScreen -eq $True ) {
-      Write-Output $Message
+      Write-Verbose $Message
     }
   }
 }
@@ -263,6 +317,11 @@ Function Write-LogWarning {
     Creation Date:  12/09/15
     Purpose/Change: Added -ToScreen parameter which will display content to screen as well as write to the log file.
 
+    Version:        1.3
+    Author:         Perry Harris
+    Creation Date:  02/10/2017
+    Purpose/Change: Put TimeStamp at the beginning, ToScreen now uses Write-Verbose, added spacing so that messages line up after Info: Warning: Error: 
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -282,20 +341,22 @@ Function Write-LogWarning {
   )
 
   Process {
+    $Message = "WARNING: $Message"
+
     #Add TimeStamp to message if specified
     If ( $TimeStamp -eq $True ) {
-      $Message = "$Message  [$([DateTime]::Now)]"
+      $Message = "$([DateTime]::Now.GetDateTimeFormats('s'))  $Message"
     }
 
     #Write Content to Log
-    Add-Content -Path $LogPath -Value "WARNING: $Message"
+    Add-Content -Path $LogPath -Value $Message
 
     #Write to screen for debug mode
-    Write-Debug "WARNING: $Message"
+    Write-Debug $Message
 
     #Write to scren for ToScreen mode
     If ( $ToScreen -eq $True ) {
-      Write-Output "WARNING: $Message"
+      Write-Verbose $Message
     }
   }
 }
@@ -372,6 +433,11 @@ Function Write-LogError {
     Creation Date:  12/09/15
     Purpose/Change: Added -ToScreen parameter which will display content to screen as well as write to the log file.
 
+    Version:        1.8
+    Author:         Perry Harris
+    Creation Date:  02/10/2017
+    Purpose/Change: Put TimeStamp at the beginning, ToScreen now uses Write-Verbose, added spacing so that messages line up after Info: Warning: Error: 
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -402,20 +468,22 @@ Function Write-LogError {
   )
 
   Process {
+    $Message = "ERROR:   $Message"
+
     #Add TimeStamp to message if specified
     If ( $TimeStamp -eq $True ) {
-      $Message = "$Message  [$([DateTime]::Now)]"
+      $Message = "$([DateTime]::Now.GetDateTimeFormats('s'))  $Message"
     }
 
     #Write Content to Log
-    Add-Content -Path $LogPath -Value "ERROR: $Message"
+    Add-Content -Path $LogPath -Value $Message
 
     #Write to screen for debug mode
-    Write-Debug "ERROR: $Message"
+    Write-Debug $Message
 
     #Write to scren for ToScreen mode
     If ( $ToScreen -eq $True ) {
-      Write-Output "ERROR: $Message"
+      Write-Verbose $Message
     }
 
     #If $ExitGracefully = True then run Log-Finish and exit script
@@ -482,6 +550,11 @@ Function Stop-Log {
     Creation Date:  12/09/15
     Purpose/Change: Added -ToScreen parameter which will display content to screen as well as write to the log file.
 
+    Version:        1.6
+    Author:         Perry Harris
+    Creation Date:  02/10/2017
+    Purpose/Change: Put TimeStamp at the beginning, ToScreen now uses Write-Verbose, added spacing so that messages line up after Info: Warning: Error: 
+
   .LINK
     http://9to5IT.com/powershell-logging-v2-easily-create-log-files
 
@@ -505,29 +578,50 @@ Function Stop-Log {
   Param (
     [Parameter(Mandatory=$true,Position=0)][string]$LogPath,
     [Parameter(Mandatory=$false,Position=1)][switch]$NoExit,
-    [Parameter(Mandatory=$false,Position=2)][switch]$ToScreen
+    [Parameter(Mandatory=$false,Position=2)][switch]$ToScreen,
+    [Parameter(Mandatory=$false,Position=3)][switch]$TimeStamp
   )
 
-  Process {
-    Add-Content -Path $LogPath -Value ""
-    Add-Content -Path $LogPath -Value "***************************************************************************************************"
-    Add-Content -Path $LogPath -Value "Finished processing at [$([DateTime]::Now)]."
-    Add-Content -Path $LogPath -Value "***************************************************************************************************"
+  Process {  
+    If ($TimeStamp) {
+        Add-Content -Path $LogPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))"
+        Add-Content -Path $LogPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Add-Content -Path $LogPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           Finished processing at [$([DateTime]::Now)]."
+        Add-Content -Path $LogPath -Value "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
 
-    #Write to screen for debug mode
-    Write-Debug ""
-    Write-Debug "***************************************************************************************************"
-    Write-Debug "Finished processing at [$([DateTime]::Now)]."
-    Write-Debug "***************************************************************************************************"
+        #Write to screen for debug mode
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))"
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           Finished processing at [$([DateTime]::Now)]."
+        Write-Debug "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
 
-    #Write to scren for ToScreen mode
-    If ( $ToScreen -eq $True ) {
-      Write-Output ""
-      Write-Output "***************************************************************************************************"
-      Write-Output "Finished processing at [$([DateTime]::Now)]."
-      Write-Output "***************************************************************************************************"
+        #Write to scren for ToScreen mode
+        If ( $ToScreen -eq $True ) {
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))"
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           Finished processing at [$([DateTime]::Now)]."
+          Write-Verbose "$([DateTime]::Now.GetDateTimeFormats('s'))           ***************************************************************************************************"
+        }
+    } else {
+        Add-Content -Path $LogPath -Value ""
+        Add-Content -Path $LogPath -Value "           ***************************************************************************************************"
+        Add-Content -Path $LogPath -Value "           Finished processing at [$([DateTime]::Now)]."
+        Add-Content -Path $LogPath -Value "           ***************************************************************************************************"
+
+        #Write to screen for debug mode
+        Write-Debug ""
+        Write-Debug "           ***************************************************************************************************"
+        Write-Debug "           Finished processing at [$([DateTime]::Now)]."
+        Write-Debug "           ***************************************************************************************************"
+
+        #Write to scren for ToScreen mode
+        If ( $ToScreen -eq $True ) {
+          Write-Verbose ""
+          Write-Verbose "          ***************************************************************************************************"
+          Write-Verbose "          Finished processing at [$([DateTime]::Now)]."
+          Write-Verbose "          ***************************************************************************************************"
+        }
     }
-
     #Exit calling script if NoExit has not been specified or is set to False
     If( !($NoExit) -or ($NoExit -eq $False) ){
       Exit
