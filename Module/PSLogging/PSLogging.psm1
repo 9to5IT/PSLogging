@@ -88,7 +88,7 @@ Function Start-Log {
     }
 
     #Create file and start logging
-    New-Item -Path $sFullPath –ItemType File
+    New-Item -Path $sFullPath ï¿½ItemType File
 
     Add-Content -Path $sFullPath -Value "***************************************************************************************************"
     Add-Content -Path $sFullPath -Value "Started processing at [$([DateTime]::Now)]."
@@ -607,7 +607,15 @@ Function Send-Log {
 
       #Create SMTP object and send email
       $oSmtp = new-object Net.Mail.SmtpClient( $SMTPServer )
-      $oSmtp.Send( $EmailFrom, $EmailTo, $EmailSubject, $sBody )
+      $msg = new-object Net.Mail.MailMessage
+      $msg.Body = $sBody
+      $msg.Subject = $EmailSubject
+      $msg.From = $EmailFrom
+      foreach ($E in $emailto)
+        {
+        $msg.To.Add($E)
+        }
+      $oSmtp.Send($msg)
       Exit 0
     }
 
