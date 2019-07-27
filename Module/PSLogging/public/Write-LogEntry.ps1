@@ -136,17 +136,9 @@ Function Write-LogEntry
         #Write to screen for ToScreen mode
         If ($ToScreen -eq $True)
         {          
-            if ($MessageType -eq "ERROR")
-            {
-                Write-Error -Message $MessageToScreen   
-            }
-            elseif ($MessageType -eq "WARNING")
-            {
-                Write-Warning -Message $MessageToScreen  
-            }
-            else {
-                Write-Output -Message $MessageToScreen    
-            }              
+
+			Write-Output -Message $MessageToScreen    
+          
         }
         
     }
